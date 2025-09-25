@@ -122,12 +122,12 @@ class UserRegistrationSchema(Schema):
     first_name = fields.Str(
         required=False,
         validate=validate.Length(max=50),
-        missing=""
+        load_default=""
     )
     last_name = fields.Str(
         required=False,
         validate=validate.Length(max=50),
-        missing=""
+        load_default=""
     )
 
 
