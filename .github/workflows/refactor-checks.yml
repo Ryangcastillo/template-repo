@@ -1,0 +1,61 @@
+name: Refactor Contract Enforcement
+
+on:
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  enforce-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check .aiconfig.md exists
+        run: |
+          [ -f ".aiconfig.md" ] || (echo "❌ Missing .aiconfig.md" && exit 1)
+
+      - name: Check /docs folder
+        run: |
+          [ -d "docs" ] || (echo "❌ Missing /docs folder" && exit 1)
+
+      - name: Check /specs folder
+        run: |
+          [ -d "specs" ] || (echo "❌ Missing /specs folder (spec-kit)" && exit 1)
+
+      - name: Ensure changelog updated
+        run: |
+          git diff --name-only origin/main | grep -q "docs/changelog.md" || \
+          (echo "❌ Must update docs/changelog.md" && exit 1)
+
+      - name: Enforce commit message style
+        run: |
+          INVALID=$(git log origin/main..HEAD --pretty=format:"%s" | \
+            grep -Ev "^(Refactor|Fix|Add|Update|Remove|Docs|Spec): .+")
+          [ -z "$INVALID" ] || (echo "❌ Invalid commit messages: $INVALID" && exit 1)
+
+      - name: Check dependency lockfile
+        run: |
+          [ -f "poetry.lock" ] || [ -f "requirements.lock" ] || \
+          (echo "❌ Missing lockfile" && exit 1)
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+
+      - name: Install dependencies
+        run: |
+          if [ -f "poetry.lock" ]; then
+            pip install poetry && poetry install
+          elif [ -f "requirements.lock" ]; then
+            pip install -r requirements.lock
+          elif [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          else
+            echo "❌ No dependencies found." && exit 1
+          fi
+
+      - name: Run tests
+        run: pytest --maxfail=1 --disable-warnings -q
