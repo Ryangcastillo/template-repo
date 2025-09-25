@@ -1,0 +1,13 @@
+This is a placeholder file for the tests directory.
+
+Replace this file with your test files based on your chosen testing framework:
+
+- Node.js: test.js, spec.js (Jest, Mocha, etc.)
+- Python: test_*.py, *_test.py (Pytest, unittest)
+- Go: *_test.go (Go test)
+- Rust: tests/ directory or #[cfg(test)] modules
+- Java: *Test.java (JUnit)
+- And so on...
+
+Follow TDD principles: Red → Green → Refactor
+Ensure all tests live in this `/tests/` directory.
