@@ -1,12 +1,71 @@
-- name: Node.js tests
-  if: matrix.language == 'node'
-  run: |
-    if [ -f package-lock.json ]; then
-      echo "✅ Using npm ci with package-lock.json"
-      npm ci
-    else
-      echo "⚠️ WARNING: No package-lock.json found. Falling back to npm install."
-      echo "⚠️ This is allowed for migration purposes but lockfiles are REQUIRED by the AI Agent Contract."
-      npm install
-    fi
-    npm test
+tests:
+  runs-on: ubuntu-latest
+  strategy:
+    matrix:
+      language: [ "node", "python" ]
+
+  steps:
+    - uses: actions/checkout@v4
+
+    # ------------------------------
+    # Node.js Workflow
+    # ------------------------------
+    - name: Setup Node.js
+      if: matrix.language == 'node'
+      uses: actions/setup-node@v4
+      with:
+        node-version: "18"
+
+    - name: Install Node.js dependencies
+      if: matrix.language == 'node'
+      run: |
+        if [ -f package-lock.json ]; then
+          echo "✅ Found package-lock.json → running npm ci"
+          npm ci
+        else
+          echo "⚠️ WARNING: No package-lock.json found. Falling back to npm install."
+          echo "⚠️ Lockfiles are required by the AI Agent Contract. Please commit one."
+          npm install
+        fi
+
+    - name: Run Node.js tests
+      if: matrix.language == 'node'
+      run: npm test
+
+    # ------------------------------
+    # Python Workflow
+    # ------------------------------
+    - name: Setup Python
+      if: matrix.language == 'python'
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+    - name: Install Python dependencies
+      if: matrix.language == 'python'
+      run: |
+        if [ -f poetry.lock ]; then
+          echo "✅ Found poetry.lock → installing with Poetry"
+          pip install poetry
+          poetry install
+        elif [ -f requirements.lock ]; then
+          echo "✅ Found requirements.lock → installing pinned deps"
+          pip install -r requirements.lock
+        elif [ -f requirements.txt ]; then
+          echo "⚠️ WARNING: No lockfile found. Falling back to requirements.txt."
+          echo "⚠️ Lockfiles are required by the AI Agent Contract. Please commit one."
+          pip install -r requirements.txt
+        else
+          echo "❌ ERROR: No dependency file found (poetry.lock, requirements.lock, or requirements.txt)."
+          exit 1
+        fi
+
+    - name: Run Python tests
+      if: matrix.language == 'python'
+      run: |
+        if command -v pytest >/dev/null 2>&1; then
+          pytest --maxfail=1 --disable-warnings -q
+        else
+          echo "❌ pytest not found. Please ensure tests are configured."
+          exit 1
+        fi
