@@ -1,11 +1,11 @@
 # Template Repository
 
-This Template Repository provides a starting point for new projects with the following features:
+This is a Template Repository designed to provide a starting point for new projects.
 
 ## Features
 
 - Clean project structure
-- Ready-to-use template files  
+- Ready-to-use template files
 - Documentation templates
 - Configuration examples
 
@@ -18,4 +18,4 @@ This Template Repository provides a starting point for new projects with the fol
 
 ## Getting Started
 
-Use this Template Repository as a foundation for creating new projects with consistent structure and best practices.
+This Template Repository provides a foundation for creating new projects with a consistent structure and best practices.
