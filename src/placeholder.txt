@@ -1,0 +1,12 @@
+This is a placeholder file for the source code directory.
+
+Replace this file with your main application code based on your chosen programming language:
+
+- Node.js: index.js, app.js, or main.js
+- Python: main.py, app.py, or __init__.py  
+- Go: main.go or cmd/main.go
+- Rust: main.rs or lib.rs
+- Java: Main.java or Application.java
+- And so on...
+
+Follow the project's architecture patterns and ensure all source code lives in this `/src/` directory.

@@ -1,0 +1,12 @@
+- name: Node.js tests
+  if: matrix.language == 'node'
+  run: |
+    if [ -f package-lock.json ]; then
+      echo "✅ Using npm ci with package-lock.json"
+      npm ci
+    else
+      echo "⚠️ WARNING: No package-lock.json found. Falling back to npm install."
+      echo "⚠️ This is allowed for migration purposes but lockfiles are REQUIRED by the AI Agent Contract."
+      npm install
+    fi
+    npm test
